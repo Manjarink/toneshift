@@ -785,7 +785,7 @@ def render_diff_view() -> None:
             "Green = added · Red = removed · Yellow = changed</p>",
             unsafe_allow_html=True,
         )
-        st.iframe(diff_html, height=500, scrolling=True)
+        st.iframe(diff_html, height=500)
 
 
 # ===========================================================================

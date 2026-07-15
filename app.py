@@ -26,6 +26,7 @@ from services.rewrite_service import rewrite_text, build_change_summary, generat
 from services.back_translation import back_translate
 from services.evaluation_service import evaluate_meaning
 from services.diff_view import generate_html_diff
+from services.grok_client import get_api_key
 from utils.export import export_txt, export_pdf
 from utils.helpers import (
     word_count,
@@ -484,7 +485,7 @@ def render_sidebar() -> tuple[str, str, int, int]:
             '<hr style="border:none; border-top:1px solid rgba(99,102,241,0.2); margin:1.2rem 0;">',
             unsafe_allow_html=True,
         )
-        api_key = os.getenv("GROQ_API_KEY", "")
+        api_key = get_api_key() or ""
         if api_key:
             st.markdown(
                 '<div style="text-align:center;font-size:0.78rem;color:#22c55e;">🟢 Groq API Connected</div>',
@@ -594,7 +595,7 @@ def _handle_rewrite(
         st.error("⚠️ Please enter some text before rewriting.")
         return
 
-    api_key = os.getenv("GROQ_API_KEY", "")
+    api_key = get_api_key() or ""
     if not api_key:
         st.error("🔑 GROQ_API_KEY is not set. Please add it to your .env file.")
         return
@@ -638,7 +639,7 @@ def _handle_all_tones(
         st.error("⚠️ Please enter some text first.")
         return
 
-    api_key = os.getenv("GROQ_API_KEY", "")
+    api_key = get_api_key() or ""
     if not api_key:
         st.error("🔑 GROQ_API_KEY is not set. Please add it to your .env file.")
         return

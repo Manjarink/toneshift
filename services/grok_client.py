@@ -19,6 +19,28 @@ GROQ_BASE_URL: str = "https://api.groq.com/openai/v1"
 DEFAULT_MODEL: str = os.getenv("GROQ_MODEL", "llama-3.1-8b-instant")
 
 
+def get_api_key() -> Optional[str]:
+    """Retrieve GROQ_API_KEY from Streamlit secrets or environment variables."""
+    try:
+        import streamlit as st
+        if "GROQ_API_KEY" in st.secrets:
+            return st.secrets["GROQ_API_KEY"]
+    except Exception:
+        pass
+    return os.getenv("GROQ_API_KEY")
+
+
+def get_model() -> str:
+    """Retrieve GROQ_MODEL from Streamlit secrets or environment variables."""
+    try:
+        import streamlit as st
+        if "GROQ_MODEL" in st.secrets:
+            return st.secrets["GROQ_MODEL"]
+    except Exception:
+        pass
+    return os.getenv("GROQ_MODEL", "llama-3.1-8b-instant")
+
+
 def _get_client() -> OpenAI:
     """
     Build and return an OpenAI-compatible client pointed at Groq's endpoint.
@@ -26,11 +48,11 @@ def _get_client() -> OpenAI:
     Raises:
         EnvironmentError: If GROQ_API_KEY is not set.
     """
-    api_key: Optional[str] = os.getenv("GROQ_API_KEY")
+    api_key = get_api_key()
     if not api_key:
         raise EnvironmentError(
             "GROQ_API_KEY is not set. "
-            "Please add it to your .env file or environment variables."
+            "Please add it to your .env file or Streamlit secrets."
         )
     return OpenAI(api_key=api_key, base_url=GROQ_BASE_URL)
 
@@ -60,7 +82,7 @@ def chat_completion(
         RuntimeError:     On unexpected API errors.
     """
     client = _get_client()
-    selected_model = model or DEFAULT_MODEL
+    selected_model = model or get_model()
 
     response = client.chat.completions.create(
         model=selected_model,
